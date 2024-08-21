@@ -1,0 +1,111 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Western Shooter Game</title>  
+    <style>  
+        body { text-align: center; font-family: Arial, sans-serif; background-color: #f2f2f2; }  
+        #entry { margin: 20px; }  
+        #game { display: none; }  
+        .enemy {  
+            font-size: 100px;  
+            animation: shake 0.5s;  
+            transition: transform 0.3s;  
+        }  
+        #enemyHit {  
+            transform: scale(1.1);  
+        }  
+        @keyframes shake {  
+            0%, 100% { transform: translateX(0); }  
+            25% { transform: translateX(-5px); }  
+            50% { transform: translateX(5px); }  
+            75% { transform: translateX(-5px); }  
+        }  
+        #status {  
+            font-size: 24px;  
+            margin-top: 10px;  
+        }  
+        #tries { font-weight: bold; }  
+    </style>  
+</head>  
+<body>  
+    <h1>Western Shooter Game</h1>  
+    <div id="entry">  
+        <label for="username">Enter your name: </label>  
+        <input type="text" id="username" required>  
+        <button onclick="enterGame()">Enter</button>  
+    </div>  
+
+    <div id="game">  
+        <h2 id="greeting"></h2>  
+        <div id="enemy" class="enemy">👽</div>  
+        <p>Shoot the enemy! You have 3 shots.</p>  
+        <button id="shootBtn" onclick="shoot()">Shoot!</button>  
+        <p id="status"></p>  
+        <p id="tries">Tries left: <span id="triesLeft">3</span></p>  
+    </div>  
+    
+    <audio id="ding" src="clock_ding.mp3"></audio>  
+    <audio id="hit" src="hit_sound.mp3"></audio>  
+    <audio id="miss" src="miss_sound.mp3"></audio>  
+
+    <script>  
+        const users = { Ilia: 20, Mostafa: 20, kasra: 20, nick: 20 };  
+        let tries = 3;  
+        let playerName;  
+        let prizeWon = false;  
+
+        function enterGame() {  
+            playerName = document.getElementById('username').value;  
+            if (users[playerName] === undefined || users[playerName] < 10) {  
+                alert("You do not have enough crowns or are not a player.");  
+                return;  
+            }  
+            document.getElementById('greeting').innerText = `Welcome, ${playerName}!`;  
+            document.getElementById('entry').style.display = 'none';  
+
+            document.getElementById('ding').play(); // Play the clock ding sound  
+            setTimeout(() => {  
+                document.getElementById('game').style.display = 'block';  
+                document.getElementById('status').innerText = "";  
+                document.getElementById('triesLeft').innerText = tries;  
+            }, 2000); // Show the game after 2 seconds  
+        }  
+
+        function shoot() {  
+            if (tries > 0) {  
+                tries--;  
+                const shot = Math.random() < 0.5; // Simulating aim; 50% chance to hit  
+                const enemyHit = document.getElementById('enemy');  
+                const statusText = document.getElementById('status');  
+                
+                enemyHit.classList.add("enemyHit"); // Trigger animation  
+
+                if (shot) {  
+                    statusText.innerText = "Hit!";  
+                    document.getElementById('hit').play(); // Play hit sound  
+                    users[playerName] += 20; // Winner gets 20 crowns  
+                    setTimeout(() => {  
+                        window.location.href = "prize.html";  
+                    }, 1000);  
+                } else {  
+                    statusText.innerText = "Miss!";  
+                    document.getElementById('miss').play(); // Play miss sound  
+                    if (tries == 0) {  
+                        users[playerName] -= 10; // Loser loses 10 crowns  
+                        setTimeout(() => {  
+                            window.location.href = "page.html";  
+                        }, 1000);  
+                    }  
+                }  
+                document.getElementById('triesLeft').innerText = tries;  
+                setTimeout(() => {  
+                    enemyHit.classList.remove("enemyHit"); // Reset animation  
+                    enemyHit.innerText = "👽"; // Reset enemy  
+                }, 500); // Reset after 0.5 second  
+            }  
+        }  
+    </script>  
+</body>  
+</html>
